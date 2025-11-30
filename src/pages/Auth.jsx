@@ -41,11 +41,26 @@ export default function Auth() {
             }
 
             if (isLogin) {
-                const { error } = await supabase.auth.signInWithPassword({
+                const { data, error } = await supabase.auth.signInWithPassword({
                     email,
                     password,
                 });
                 if (error) throw error;
+
+                // Update Login Stats
+                const { error: updateError } = await supabase.rpc('increment_login_stats', { user_id_param: data.user.id });
+
+                // Fallback if RPC doesn't exist (though RPC is better for atomic increments)
+                if (updateError) {
+                    // Fetch current count first
+                    const { data: profile } = await supabase.from('profiles').select('login_count').eq('id', data.user.id).single();
+                    const currentCount = profile?.login_count || 0;
+
+                    await supabase.from('profiles').update({
+                        last_login: new Date().toISOString(),
+                        login_count: currentCount + 1
+                    }).eq('id', data.user.id);
+                }
 
                 // Role Redirect Logic
                 if (email === 'schedule.manager4@gmail.com') {
@@ -196,7 +211,7 @@ export default function Auth() {
                     </button>
                 </form>
 
-                <div className="mt-10 text-center pt-6 border-t border-white-10">
+                <div className="mt-10 text-center pt-6 border-t">
                     <p className="text-gray-400 text-sm">
                         {isLogin ? "Don't have an account? " : "Already have an account? "}
                         <button

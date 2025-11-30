@@ -210,6 +210,12 @@ button {
   border-color: var(--primary);
 }
 
+/* Fix for select options visibility in dark mode */
+option {
+  color: var(--dark);
+  background-color: var(--light);
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -328,6 +334,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  color: var(--light);
 }
 
 .input-wrapper {
@@ -2214,7 +2221,7 @@ button {
 /* Reminder Items */
 .reminder-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
   border-radius: var(--radius-lg);
@@ -2271,6 +2278,7 @@ button {
 }
 
 .note-icon-compact {
+  display: flex;
   background-color: rgba(255, 204, 0, 0.1);
   padding: 0.75rem;
   border-radius: var(--radius-md);
@@ -2311,6 +2319,7 @@ button {
 }
 
 .download-btn-compact {
+  display: flex;
   padding: 0.5rem;
   border-radius: 50%;
   color: var(--text-muted);
@@ -2374,6 +2383,7 @@ button {
   margin-bottom: 0.5rem;
   opacity: 0.2;
 }
+
 /* Form Elements */
 .input-field {
   width: 100%;
@@ -2399,9 +2409,9 @@ button {
 
 /* Custom Date Input Styling */
 input[type='datetime-local']::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-    opacity: 0.6;
-    cursor: pointer;
+  filter: invert(1);
+  opacity: 0.6;
+  cursor: pointer;
 }
 
 .btn-primary-gradient {
@@ -2431,4 +2441,3 @@ input[type='datetime-local']::-webkit-calendar-picker-indicator {
   background: rgba(255, 255, 255, 0.1);
   color: var(--light);
 }
-

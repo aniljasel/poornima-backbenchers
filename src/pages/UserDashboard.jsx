@@ -200,6 +200,7 @@ export default function UserDashboard() {
         if (!userSession?.user) return;
 
         try {
+            // Log history
             await supabase
                 .from('note_history')
                 .insert({
@@ -207,6 +208,33 @@ export default function UserDashboard() {
                     note_id: note.id,
                     action_type: 'download'
                 });
+
+            // Increment download count
+            const { error: updateError } = await supabase.rpc('increment_download_stats', { user_id_param: userSession.user.id });
+
+            if (updateError) {
+                console.warn("RPC increment_download_stats failed, trying manual update:", updateError);
+                // Fallback
+                const { data: profile, error: fetchError } = await supabase.from('profiles').select('download_count').eq('id', userSession.user.id).single();
+
+                if (fetchError) {
+                    console.error("Failed to fetch profile for download count:", fetchError);
+                } else {
+                    const currentCount = profile?.download_count || 0;
+                    const { error: manualUpdateError } = await supabase.from('profiles').update({
+                        download_count: currentCount + 1
+                    }).eq('id', userSession.user.id);
+
+                    if (manualUpdateError) {
+                        console.error("Manual download count update failed:", manualUpdateError);
+                    } else {
+                        console.log("Manual download count update successful");
+                    }
+                }
+            } else {
+                console.log("RPC download count update successful");
+            }
+
         } catch (error) {
             console.error("Error logging history:", error);
         }

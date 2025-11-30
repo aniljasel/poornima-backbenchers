@@ -19,7 +19,7 @@ export default function About() {
                     </p>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
                     <div className="glass" style={{ padding: '1.5rem', borderRadius: '8px' }}>
                         <h3 style={{ color: 'var(--primary)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>..+</h3>
                         <p style={{ color: '#aaa' }}>Students Helped</p>

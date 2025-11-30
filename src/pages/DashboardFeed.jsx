@@ -36,8 +36,12 @@ export default function DashboardFeed() {
 
     const navigate = useNavigate();
 
-    const handleDownload = async (url, filename) => {
+    const handleDownload = async (note) => {
+        const url = note.fileUrl;
+        const filename = note.title;
+
         try {
+            // 1. Download Logic
             const response = await fetch(url);
             const blob = await response.blob();
             const blobUrl = window.URL.createObjectURL(blob);
@@ -48,6 +52,32 @@ export default function DashboardFeed() {
             link.click();
             document.body.removeChild(link);
             window.URL.revokeObjectURL(blobUrl);
+
+            // 2. Log History & Update Stats
+            if (user) {
+                await supabase.from('note_history').insert({
+                    user_id: user.id,
+                    note_id: note.id,
+                    action_type: 'download'
+                });
+
+                const { error: updateError } = await supabase.rpc('increment_download_stats', { user_id_param: user.id });
+
+                if (updateError) {
+                    console.warn("RPC increment_download_stats failed:", updateError);
+                    const { data: profile } = await supabase.from('profiles').select('download_count').eq('id', user.id).single();
+                    const currentCount = profile?.download_count || 0;
+                    const { error: manualError } = await supabase.from('profiles').update({ download_count: currentCount + 1 }).eq('id', user.id);
+                    if (manualError) console.error("Manual profile update failed:", manualError);
+                    else console.log("Manual profile update successful");
+                } else {
+                    console.log("RPC increment_download_stats successful");
+                }
+
+                // Update local stats
+                setStats(prev => ({ ...prev, downloads: prev.downloads + 1 }));
+            }
+
         } catch (error) {
             console.error('Download failed:', error);
             window.open(url, '_blank');
@@ -174,12 +204,12 @@ export default function DashboardFeed() {
 
             {/* Reminder Modal */}
             {showReminderModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" style={{backdropFilter: 'blur(10px)'}}>
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.3 }}
-                        style={{maxHeight: '320px'}}
+                        style={{ maxHeight: '320px' }}
                         className="glass-card p-4 rounded-2xl w-full max-w-md shadow-2xl border border-white/10"
                     >
                         <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
@@ -202,6 +232,7 @@ export default function DashboardFeed() {
                                 <label className="block text-sm text-gray-400 mb-2">Date & Time</label>
                                 <input
                                     type="datetime-local"
+                                    placeholder="Enter date and time..."
                                     className="input-field"
                                     value={newReminder.date}
                                     onChange={e => setNewReminder({ ...newReminder, date: e.target.value })}
@@ -266,7 +297,7 @@ export default function DashboardFeed() {
                 {/* Quick Actions */}
                 <div className="quick-actions-grid">
                     {isAdmin ? (
-                        <>  
+                        <>
                             <QuickActionCard
                                 icon={<Plus size={24} />}
                                 label="Upload Note"
@@ -358,7 +389,7 @@ export default function DashboardFeed() {
                             announcements.length > 0 ? (
                                 announcements.map(announcement => (
                                     <div key={announcement.id} className="reminder-item">
-                                        <div className="reminder-icon">
+                                        <div className="flex reminder-icon">
                                             <AlertTriangle size={16} />
                                         </div>
                                         <div className="reminder-info">
@@ -438,7 +469,7 @@ export default function DashboardFeed() {
                                     className="download-btn-compact"
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        handleDownload(note.fileUrl, note.title);
+                                        handleDownload(note);
                                     }}
                                 >
                                     <Download size={16} />
@@ -467,7 +498,7 @@ export default function DashboardFeed() {
                         </div>
 
                         <div className="joined-card">
-                            <div className="joined-icon">
+                            <div className="flex joined-icon">
                                 <Clock size={16} />
                             </div>
                             <div>

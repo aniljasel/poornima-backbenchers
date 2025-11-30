@@ -1,7 +1,31 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, Mail, Phone, BookOpen, Calendar, Clock, Shield, Activity, Download, Check } from 'lucide-react';
 
-export default function UserDetailsModal({ isOpen, onClose, user, onUpdateRole }) {
+export default function UserDetailsModal({ isOpen, onClose, user: initialUser, onUpdateRole }) {
+    const [user, setUser] = useState(initialUser);
+
+    useEffect(() => {
+        setUser(initialUser);
+    }, [initialUser]);
+
+    useEffect(() => {
+        if (isOpen && initialUser?.id) {
+            const fetchLatestUserData = async () => {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', initialUser.id)
+                    .single();
+
+                if (data && !error) {
+                    setUser(data);
+                }
+            };
+            fetchLatestUserData();
+        }
+    }, [isOpen, initialUser?.id]);
     if (!isOpen || !user) return null;
 
     const formatDate = (dateString) => {
@@ -49,9 +73,9 @@ export default function UserDetailsModal({ isOpen, onClose, user, onUpdateRole }
                                 <div className="bg-white-5 rounded-xl p-4 border border-white-5">
                                     <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Account Status</p>
                                     <div className="flex items-center justify-between mb-2">
-                                        <span 
-                                        style={{borderRadius: '4px'}}
-                                        className={`px-2 py-1 rounded text-xs font-bold ${user.blocked ? 'bg-red-500-20 text-red-400' : 'bg-green-500-20 text-green-400'}`}>
+                                        <span
+                                            style={{ borderRadius: '4px' }}
+                                            className={`px-2 py-1 rounded text-xs font-bold ${user.blocked ? 'bg-red-500-20 text-red-400' : 'bg-green-500-20 text-green-400'}`}>
                                             {user.blocked ? 'BLOCKED' : 'ACTIVE'}
                                         </span>
                                         <span className="text-xs text-gray-500">
