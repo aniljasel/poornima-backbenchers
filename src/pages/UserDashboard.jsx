@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { motion } from 'framer-motion';
-import { FileText, Download, Loader, LogOut, Search, User, LayoutDashboard, Bookmark, Clock, Sparkles, Heart, CheckSquare, AlertTriangle } from 'lucide-react';
+import { FileText, Download, Loader, LogOut, Search, User, LayoutDashboard, Bookmark, Clock, Sparkles, Heart, CheckSquare, AlertTriangle, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import UserProfile from '../components/UserProfile';
 import ConfirmationModal from '../components/ConfirmationModal';
@@ -15,7 +15,7 @@ export default function UserDashboard() {
     const [loading, setLoading] = useState(true);
     const [selectedSubject, setSelectedSubject] = useState('ALL');
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeTab, setActiveTab] = useState('notes'); // 'notes', 'saved', 'productivity', 'profile'
+    const [activeTab, setActiveTab] = useState('home'); // 'home', 'library', 'saved', 'productivity', 'profile'
     const [userSession, setUserSession] = useState(null);
     const [userName, setUserName] = useState('');
     const [userProfile, setUserProfile] = useState(null);
@@ -228,6 +228,13 @@ export default function UserDashboard() {
 
     if (loading) return <div className="flex items-center justify-center min-h-screen"><Loader className="animate-spin text-primary" /></div>;
 
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return 'Good Morning';
+        if (hour < 18) return 'Good Afternoon';
+        return 'Good Evening';
+    };
+
     return (
         <div className="container dashboard-container dashboard-layout">
             {/* Sidebar */}
@@ -246,18 +253,25 @@ export default function UserDashboard() {
 
                 <nav className="sidebar-nav">
                     <button
-                        onClick={() => setActiveTab('notes')}
-                        className={`nav-btn ${activeTab === 'notes' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('home')}
+                        className={`nav-btn ${activeTab === 'home' ? 'active' : ''}`}
                     >
                         <LayoutDashboard size={20} />
-                        Dashboard
+                        Home
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('library')}
+                        className={`nav-btn ${activeTab === 'library' ? 'active' : ''}`}
+                    >
+                        <FileText size={20} />
+                        Library
                     </button>
                     <button
                         onClick={() => setActiveTab('saved')}
                         className={`nav-btn ${activeTab === 'saved' ? 'active' : ''}`}
                     >
                         <Bookmark size={20} />
-                        Saved Notes
+                        Saved
                     </button>
                     <button
                         onClick={() => setActiveTab('productivity')}
@@ -271,7 +285,7 @@ export default function UserDashboard() {
                         className={`nav-btn ${activeTab === 'profile' ? 'active' : ''}`}
                     >
                         <User size={20} />
-                        My Profile
+                        Profile
                     </button>
                     <button
                         onClick={handleLogoutClick}
@@ -284,18 +298,168 @@ export default function UserDashboard() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 w-full">
+            <main className="flex-1 w-full overflow-y-auto">
                 <div className="dashboard-header mb-6">
                     <h1 className="dashboard-title text-3xl font-bold">
-                        {activeTab === 'notes' && 'Study Materials'}
+                        {activeTab === 'home' && 'Dashboard'}
+                        {activeTab === 'library' && 'Study Library'}
                         {activeTab === 'saved' && 'Saved Notes'}
-                        {activeTab === 'productivity' && 'Study Tools'}
+                        {activeTab === 'productivity' && 'Productivity Hub'}
                         {activeTab === 'profile' && 'My Profile'}
                     </h1>
                 </div>
 
-                {activeTab === 'notes' && (
-                    <>
+                {activeTab === 'home' && (
+                    <div className="space-y-8 animate-fade-in">
+                        {/* Hero Section */}
+                        <div className="glass p-8 rounded-2xl relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-primary-20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+                            <div className="relative z-10">
+                                <h2 className="text-4xl font-bold mb-2 gradient-text">{getGreeting()}, {userName?.split(' ')[0] || 'Student'}!</h2>
+                                <p className="text-gray-300 text-lg max-w-2xl">
+                                    "Success is not final, failure is not fatal: it is the courage to continue that counts."
+                                </p>
+                                <div className="mt-6 flex gap-4">
+                                    <button onClick={() => setActiveTab('library')} className="btn-primary flex items-center gap-2">
+                                        Start Studying <ArrowRight size={18} />
+                                    </button>
+                                    <button onClick={() => setActiveTab('productivity')} className="px-6 py-2.5 rounded-lg font-semibold bg-white/10 hover:bg-white/20 transition-colors flex items-center gap-2">
+                                        View Tasks
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Stats Row */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div className="glass p-4 rounded-xl flex items-center gap-4 hover:bg-white/5 transition-colors">
+                                <div className="bg-blue-500/20 p-3 rounded-lg text-blue-400">
+                                    <FileText size={24} />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-400">Total Notes</p>
+                                    <h3 className="text-2xl font-bold">{notes.length}</h3>
+                                </div>
+                            </div>
+                            <div className="glass p-4 rounded-xl flex items-center gap-4 hover:bg-white/5 transition-colors">
+                                <div className="bg-purple-500/20 p-3 rounded-lg text-purple-400">
+                                    <Bookmark size={24} />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-400">Saved Notes</p>
+                                    <h3 className="text-2xl font-bold">{bookmarks.size}</h3>
+                                </div>
+                            </div>
+                            <div className="glass p-4 rounded-xl flex items-center gap-4 hover:bg-white/5 transition-colors">
+                                <div className="bg-green-500/20 p-3 rounded-lg text-green-400">
+                                    <CheckSquare size={24} />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-400">Pending Tasks</p>
+                                    <h3 className="text-2xl font-bold">--</h3> {/* Placeholder for tasks count */}
+                                </div>
+                            </div>
+                            <div className="glass p-4 rounded-xl flex items-center gap-4 hover:bg-white/5 transition-colors">
+                                <div className="bg-orange-500/20 p-3 rounded-lg text-orange-400">
+                                    <Clock size={24} />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-400">Study Hours</p>
+                                    <h3 className="text-2xl font-bold">0h</h3> {/* Placeholder */}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            {/* Recent Activity / Continue Reading */}
+                            <div className="lg:col-span-2 space-y-6">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-xl font-bold flex items-center gap-2">
+                                        <Clock size={20} className="text-primary" /> Continue Reading
+                                    </h3>
+                                    <button onClick={() => setActiveTab('library')} className="text-sm text-primary hover:underline">View All</button>
+                                </div>
+
+                                {recentNotes.length > 0 ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {recentNotes.slice(0, 4).map(note => (
+                                            <div key={note.id} onClick={() => window.open(note.fileUrl, '_blank')} className="glass p-4 rounded-xl cursor-pointer hover:scale-[1.02] transition-transform group">
+                                                <div className="flex items-start justify-between mb-3">
+                                                    <div className="bg-white/10 p-2 rounded-lg">
+                                                        <FileText size={20} className="text-primary" />
+                                                    </div>
+                                                    <span className="text-xs font-medium px-2 py-1 rounded bg-white/5 text-gray-400">{note.subject}</span>
+                                                </div>
+                                                <h4 className="font-bold text-lg mb-1 group-hover:text-primary transition-colors line-clamp-1">{note.title}</h4>
+                                                <p className="text-sm text-gray-400 line-clamp-2">{note.description || 'No description available.'}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="glass p-8 rounded-xl text-center text-gray-500">
+                                        <p>No recent activity. Start exploring the library!</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Right Column: Announcements & Quick Actions */}
+                            <div className="space-y-6">
+                                {/* Announcements */}
+                                {announcements.length > 0 && (
+                                    <div className="glass p-5 rounded-xl">
+                                        <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                                            <AlertTriangle size={18} className="text-yellow-400" /> Updates
+                                        </h3>
+                                        <div className="space-y-4">
+                                            {announcements.map(ann => (
+                                                <div key={ann.id} className="pb-3 border-b border-white/10 last:border-0 last:pb-0">
+                                                    <div className="flex justify-between items-start mb-1">
+                                                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase ${ann.type === 'important' ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                                                            {ann.type}
+                                                        </span>
+                                                        <span className="text-[10px] text-gray-500">{new Date(ann.created_at).toLocaleDateString()}</span>
+                                                    </div>
+                                                    <p className="text-sm font-medium text-gray-200">{ann.title}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Quick Actions */}
+                                <div className="glass p-5 rounded-xl">
+                                    <h3 className="text-lg font-bold mb-4">Quick Actions</h3>
+                                    <div className="space-y-2">
+                                        <button onClick={() => setActiveTab('library')} className="w-full p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors flex items-center justify-between group">
+                                            <span className="flex items-center gap-3">
+                                                <Search size={18} className="text-gray-400 group-hover:text-white" />
+                                                Find Notes
+                                            </span>
+                                            <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        </button>
+                                        <button onClick={() => setActiveTab('productivity')} className="w-full p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors flex items-center justify-between group">
+                                            <span className="flex items-center gap-3">
+                                                <CheckSquare size={18} className="text-gray-400 group-hover:text-white" />
+                                                Add Task
+                                            </span>
+                                            <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        </button>
+                                        <button onClick={() => setActiveTab('profile')} className="w-full p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors flex items-center justify-between group">
+                                            <span className="flex items-center gap-3">
+                                                <User size={18} className="text-gray-400 group-hover:text-white" />
+                                                Update Profile
+                                            </span>
+                                            <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'library' && (
+                    <div className="animate-fade-in">
                         {/* Announcements Section */}
                         {announcements.length > 0 && (
                             <div className="mb-8 glass p-4 rounded-xl border-l-4 border-primary animate-fade-in">
@@ -424,7 +588,7 @@ export default function UserDashboard() {
                                 <p>No notes found matching your criteria.</p>
                             </div>
                         )}
-                    </>
+                    </div>
                 )}
 
                 {activeTab === 'saved' && (
