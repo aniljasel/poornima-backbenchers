@@ -8,11 +8,12 @@ import AdminDashboard from './pages/AdminDashboard';
 import About from './pages/About';
 import Important from './pages/Important';
 import NotFound from './pages/NotFound';
+import DashboardFeed from './pages/DashboardFeed';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import { ToastProvider } from './context/ToastContext';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from './supabaseClient';
 
 import { useNavigate } from 'react-router-dom';
@@ -20,21 +21,34 @@ import { useNavigate } from 'react-router-dom';
 function App() {
   const navigate = useNavigate();
 
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
       if (event === 'SIGNED_OUT') {
         window.location.reload();
       } else if (event === 'SIGNED_IN') {
-        // Redirect to dashboard on login instead of reloading to avoid loops
-        // Only redirect if we are on the login page or landing page
-        if (window.location.pathname === '/login' || window.location.pathname === '/') {
-          navigate('/user-dashboard');
+        // Redirect to home on login
+        if (window.location.pathname === '/login') {
+          navigate('/');
         }
       }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen text-primary">Loading...</div>;
+  }
 
   return (
     <ToastProvider>
@@ -43,7 +57,7 @@ function App() {
         <Navbar />
 
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={session ? <DashboardFeed /> : <LandingPage />} />
           <Route path="/login" element={<Auth />} />
           <Route path="/about" element={<About />} />
 

@@ -334,7 +334,7 @@ export default function UserDashboard() {
                             <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 {/* Recently Viewed */}
                                 {recentNotes.length > 0 && (
-                                    <div className="glass p-5 rounded-xl">
+                                    <div className="glass p-4 rounded-xl">
                                         <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
                                             <Clock size={18} className="text-primary" /> Recently Viewed
                                         </h3>
@@ -342,7 +342,7 @@ export default function UserDashboard() {
                                             {recentNotes.slice(0, 3).map(note => (
                                                 <div key={note.id} className="flex items-center justify-between p-2 hover:bg-white/5 rounded-lg transition-colors cursor-pointer">
                                                     <div className="flex items-center gap-3 overflow-hidden">
-                                                        <div className="bg-primary-10 p-2 rounded">
+                                                        <div className="bg-primary-10 p-2 rounded-md">
                                                             <FileText size={16} className="text-primary" />
                                                         </div>
                                                         <span className="truncate text-sm font-medium">{note.title}</span>
