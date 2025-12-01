@@ -1645,12 +1645,15 @@ option {
   position: relative;
   transition: background-color 0.2s;
   cursor: pointer;
-  border: none;
+  border: 1.5px solid var(--card-border);
   outline: none;
 }
 
 .toggle-btn.active {
   background-color: var(--primary);
+}
+.toggle-btn.active-red {
+  background-color: var(--accent);
 }
 
 /* Premium UI Refactor Styles */
@@ -1823,8 +1826,8 @@ option {
   background-color: var(--light);
   border-radius: 50%;
   position: absolute;
-  top: 0.25rem;
-  left: 0.25rem;
+  top: 0.15rem;
+  left: 0.15rem;
   transition: transform 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
