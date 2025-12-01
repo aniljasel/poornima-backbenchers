@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Trash2, LogOut, Loader, CheckCircle, FileText, AlertTriangle, Users, Shield, Edit2, Search, BarChart2, Eye } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { UserGrowthChart, SubjectDistributionChart, UserStatusChart } from '../components/AnalyticsCharts';
@@ -17,6 +17,7 @@ export default function AdminDashboard() {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploadSuccess, setUploadSuccess] = useState(false);
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { addToast } = useToast();
 
     // Modal State
@@ -41,7 +42,7 @@ export default function AdminDashboard() {
     const [selectedUserForDetails, setSelectedUserForDetails] = useState(null);
 
     // Dashboard State
-    const [activeTab, setActiveTab] = useState('analytics'); // 'analytics' | 'notes' | 'users' | 'communication'
+    const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'analytics'); // 'analytics' | 'notes' | 'users' | 'communication'
     const [notes, setNotes] = useState([]);
 
     // Note Management State
@@ -458,9 +459,9 @@ export default function AdminDashboard() {
                             Comm
                         </button>
                     </div>
-                    <button onClick={handleLogoutClick} 
-                    style={{padding: '0.1rem 0.6rem'}}
-                    className="flex items-center justify-center gap-2 text-red-400 hover-bg-red-500-10 px-4 py-2 rounded-lg transition-colors w-full md:w-auto">
+                    <button onClick={handleLogoutClick}
+                        style={{ padding: '0.1rem 0.6rem' }}
+                        className="flex items-center justify-center gap-2 text-red-400 hover-bg-red-500-10 px-4 py-2 rounded-lg transition-colors w-full md:w-auto">
                         <LogOut size={20} /> Logout
                     </button>
                 </div>

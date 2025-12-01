@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { motion } from 'framer-motion';
 import { FileText, Download, Loader, LogOut, Search, User, LayoutDashboard, Bookmark, Clock, Sparkles, Heart, CheckSquare, AlertTriangle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import UserProfile from '../components/UserProfile';
 import ConfirmationModal from '../components/ConfirmationModal';
 import NoteCard from '../components/NoteCard';
@@ -15,7 +15,8 @@ export default function UserDashboard() {
     const [loading, setLoading] = useState(true);
     const [selectedSubject, setSelectedSubject] = useState('ALL');
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeTab, setActiveTab] = useState('notes'); // 'notes', 'saved', 'productivity', 'profile'
+    const [searchParams] = useSearchParams();
+    const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'notes'); // 'notes', 'saved', 'productivity', 'profile'
     const [userSession, setUserSession] = useState(null);
     const [userName, setUserName] = useState('');
     const [userProfile, setUserProfile] = useState(null);

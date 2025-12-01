@@ -204,7 +204,7 @@ export default function DashboardFeed() {
 
             {/* Reminder Modal */}
             {showReminderModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" style={{backdropFilter: 'blur(10px)'}}>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" style={{ backdropFilter: 'blur(10px)' }}>
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -301,25 +301,25 @@ export default function DashboardFeed() {
                             <QuickActionCard
                                 icon={<Plus size={24} />}
                                 label="Upload Note"
-                                onClick={() => navigate('/admin-dashboard')}
+                                onClick={() => navigate('/admin-dashboard?tab=notes')}
                                 color="primary"
                             />
                             <QuickActionCard
                                 icon={<FileText size={24} />}
                                 label="Review Notes"
-                                onClick={() => navigate('/admin-dashboard')}
+                                onClick={() => navigate('/admin-dashboard?tab=notes')}
                                 color="blue"
                             />
                             <QuickActionCard
                                 icon={<User size={24} />}
                                 label="Manage Users"
-                                onClick={() => navigate('/admin-dashboard')}
+                                onClick={() => navigate('/admin-dashboard?tab=users')}
                                 color="purple"
                             />
                             <QuickActionCard
                                 icon={<Bell size={24} />}
                                 label="Post Update"
-                                onClick={() => navigate('/admin-dashboard')}
+                                onClick={() => navigate('/admin-dashboard?tab=communication')}
                                 color="yellow"
                             />
                         </>
@@ -328,13 +328,13 @@ export default function DashboardFeed() {
                             <QuickActionCard
                                 icon={<User size={24} />}
                                 label="View Profile"
-                                onClick={() => navigate('/user-dashboard')}
+                                onClick={() => navigate('/user-dashboard?tab=profile')}
                                 color="primary"
                             />
                             <QuickActionCard
                                 icon={<Plus size={24} />}
                                 label="Upload Note"
-                                onClick={() => navigate('/user-dashboard')}
+                                onClick={() => navigate('/user-dashboard?tab=notes')}
                                 color="primary"
                                 disabled
                             />
@@ -348,7 +348,7 @@ export default function DashboardFeed() {
                             <QuickActionCard
                                 icon={<LayoutDashboard size={24} />}
                                 label="My Dashboard"
-                                onClick={() => navigate('/user-dashboard')}
+                                onClick={() => navigate('/user-dashboard?tab=notes')}
                                 color="purple"
                             />
                         </>
@@ -376,10 +376,10 @@ export default function DashboardFeed() {
                                 <button onClick={() => setShowReminderModal(true)} className="text-xs flex items-center gap-1 text-primary hover:underline">
                                     <Plus size={14} /> Add
                                 </button>
-                                <button onClick={() => navigate('/user-dashboard')} className="widget-link">View All</button>
+                                <button onClick={() => navigate('/user-dashboard?tab=productivity')} className="widget-link">View All</button>
                             </div>
                         ) : (
-                            <button onClick={() => navigate('/admin-dashboard')} className="widget-link">View All</button>
+                            <button onClick={() => navigate('/admin-dashboard?tab=communication')} className="widget-link">View All</button>
                         )}
                     </div>
 
@@ -448,7 +448,7 @@ export default function DashboardFeed() {
                             <Sparkles size={20} className="text-primary" />
                             Recently Uploaded
                         </h3>
-                        <button onClick={() => navigate(isAdmin ? '/admin-dashboard' : '/user-dashboard')} className="widget-link">Browse All</button>
+                        <button onClick={() => navigate(isAdmin ? '/admin-dashboard?tab=notes' : '/user-dashboard?tab=notes')} className="widget-link">Browse All</button>
                     </div>
 
                     <div className="recent-notes-grid">
