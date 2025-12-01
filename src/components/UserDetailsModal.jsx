@@ -57,7 +57,7 @@ export default function UserDetailsModal({ isOpen, onClose, user: initialUser, o
                         </div>
                         <button
                             onClick={onClose}
-                            className="text-gray-400 hover:text-white hover:bg-white-10 p-2 rounded-full transition-all"
+                            className="ghost-btn text-gray-400 hover:text-white hover:bg-white-10 p-2 rounded-full transition-all"
                         >
                             <X size={20} />
                         </button>

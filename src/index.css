@@ -451,6 +451,13 @@ option {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+.ghost-btn {
+  position: absolute;
+  top: 50%;
+  right: -10px;
+  transform: translate(-50%, -50%);
+}
+
 /* Navbar */
 .navbar {
   position: fixed;
