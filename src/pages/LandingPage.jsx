@@ -29,8 +29,7 @@ export default function LandingPage() {
                         </h1>
 
                         <p className="hero-subtitle">
-                            The ultimate resource hub for Poornima University students.
-                            Access notes, important questions, and more.
+                            Unlock your academic potential with study notes, resources, and a supportive community of learners.
                         </p>
 
                         <div className="flex justify-center gap-4" style={{ flexWrap: 'wrap' }}>

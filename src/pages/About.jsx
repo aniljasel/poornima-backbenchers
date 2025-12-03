@@ -15,17 +15,17 @@ export default function About() {
                         Welcome to <strong>Poornima Backbenchers</strong>. We are a community-driven platform dedicated to helping students of Poornima University ace their exams with minimum effort and maximum efficiency.
                     </p>
                     <p style={{ fontSize: '1.2rem', lineHeight: 1.8, color: '#e0e0e0' }}>
-                        Our mission is to provide high-quality notes, important questions, and last-minute study resources for BCA students, specifically focusing on subjects like ADS and MAD.
+                        Our mission is to provide high-quality notes, important questions, and last-minute study resources for BCA students. We understand the challenges students face during exam preparation, and we aim to make the process easier and more effective. Whether you're looking for concise notes or need quick revision materials, we've got you covered. Join us and become a part of a supportive community that values learning and success! 
                     </p>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
                     <div className="glass" style={{ padding: '1.5rem', borderRadius: '8px' }}>
-                        <h3 style={{ color: 'var(--primary)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>..+</h3>
+                        <h3 style={{ color: 'var(--primary)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>10+</h3>
                         <p style={{ color: '#aaa' }}>Students Helped</p>
                     </div>
                     <div className="glass" style={{ padding: '1.5rem', borderRadius: '8px' }}>
-                        <h3 style={{ color: 'var(--primary)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>10+</h3>
+                        <h3 style={{ color: 'var(--primary)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>100+</h3>
                         <p style={{ color: '#aaa' }}>Notes Uploaded</p>
                     </div>
                     <div className="glass" style={{ padding: '1.5rem', borderRadius: '8px' }}>
