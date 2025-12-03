@@ -86,14 +86,14 @@ function App() {
               }
             />
 
-            <Route
+            {/* <Route
               path="/important"
               element={
                 <ProtectedRoute>
                   <Important />
                 </ProtectedRoute>
               }
-            />
+            /> */}
 
             {/* Redirects */}
             <Route path="/notes" element={<Navigate to="/user-dashboard" replace />} />
