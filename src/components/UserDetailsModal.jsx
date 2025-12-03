@@ -113,7 +113,7 @@ export default function UserDetailsModal({ isOpen, onClose, user: initialUser, o
                             {/* Right Column: Details & Activity */}
                             <div className="md:col-span-2 space-y-6">
                                 {/* Personal Details Grid */}
-                                <div>
+                                <div className='mb-6'>
                                     <h3 className="text-sm font-bold text-gray-400 mb-3 uppercase tracking-wider">Personal Information</h3>
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="bg-white-5 p-3 rounded-lg border border-white-5">
