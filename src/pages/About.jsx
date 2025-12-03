@@ -21,11 +21,11 @@ export default function About() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
                     <div className="glass" style={{ padding: '1.5rem', borderRadius: '8px' }}>
-                        <h3 style={{ color: 'var(--primary)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>10+</h3>
+                        <h3 style={{ color: 'var(--primary)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>100+</h3>
                         <p style={{ color: '#aaa' }}>Students Helped</p>
                     </div>
                     <div className="glass" style={{ padding: '1.5rem', borderRadius: '8px' }}>
-                        <h3 style={{ color: 'var(--primary)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>100+</h3>
+                        <h3 style={{ color: 'var(--primary)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>10+</h3>
                         <p style={{ color: '#aaa' }}>Notes Uploaded</p>
                     </div>
                     <div className="glass" style={{ padding: '1.5rem', borderRadius: '8px' }}>
