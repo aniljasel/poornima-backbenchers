@@ -9,12 +9,14 @@ import NotFound from './pages/NotFound';
 import DashboardFeed from './pages/DashboardFeed';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ToastProvider } from './context/ToastContext';
+import Footer from './components/Footer';
 import { useEffect, useState, Suspense, lazy } from 'react';
 import { supabase } from './supabaseClient';
 import { useNavigate } from 'react-router-dom';
 // Lazy load heavy components
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const Auth = lazy(() => import('./pages/Auth'));
+const Courses = lazy(() => import('./pages/Courses'));
 
 function App() {
   const navigate = useNavigate();
@@ -101,25 +103,12 @@ function App() {
 
             {/* 404 Page */}
             <Route path="*" element={<NotFound />} />
+            <Route path="/courses" element={<Courses />} />
           </Routes>
         </Suspense>
 
-        {/* Global Disclaimer */}
-        {/* <div style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          width: '100%',
-          backgroundColor: 'var(--accent)',
-          color: 'white',
-          textAlign: 'center',
-          padding: '10px',
-          fontWeight: 'bold',
-          zIndex: 100,
-          fontSize: '0.9rem'
-        }}>
-          <marquee behavior="scroll" direction="left" scrollamount="5">DISCLAIMER: This website is made only for educational purposes. Take it at your own risk.</marquee>
-        </div> */}
+        <Footer />
+        
       </div>
     </ToastProvider>
   );

@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { supabase } from '../supabaseClient';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Trash2, LogOut, Loader, CheckCircle, FileText, AlertTriangle, Users, Shield, Edit2, Search, BarChart2, Eye } from 'lucide-react';
+import { X, Upload, Trash2, LogOut, Loader, CheckCircle, FileText, AlertTriangle, Users, Shield, Edit2, Search, BarChart2, Eye, BookOpen, Plus, Link as LinkIcon, Image, Layers } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import ConfirmationModal from '../components/ConfirmationModal';
@@ -53,6 +53,13 @@ export default function AdminDashboard() {
     const [announcements, setAnnouncements] = useState([]);
     const [newAnnouncement, setNewAnnouncement] = useState({ title: '', content: '', type: 'info' });
 
+    // Subject & Course State
+    const [subjects, setSubjects] = useState([]);
+    const [newSubject, setNewSubject] = useState('');
+    const [courses, setCourses] = useState([]);
+    const [newCourse, setNewCourse] = useState({ title: '', description: '', link: '', image_url: '', subject_id: '', is_published: true });
+    const [editingCourse, setEditingCourse] = useState(null);
+
     useEffect(() => {
         const checkSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
@@ -86,10 +93,38 @@ export default function AdminDashboard() {
             fetchNotes();
             fetchUsers();
             fetchAnnouncements();
+            fetchSubjects();
+            fetchCourses();
             setLoading(false);
         };
         checkSession();
     }, [navigate]);
+
+    const fetchSubjects = async () => {
+        try {
+            const { data, error } = await supabase.from('subjects').select('*').order('name');
+            if (error) throw error;
+            setSubjects(data);
+        } catch (error) {
+            console.error("Error fetching subjects:", error);
+            // Fallback to defaults if table doesn't exist or is empty
+            if (subjects.length === 0) {
+                setSubjects([
+                    { name: 'ADS' }, { name: 'MAD' }, { name: 'Web Development' }, { name: 'Frontend Development' }, { name: 'UI/UX Design' }
+                ]);
+            }
+        }
+    };
+
+    const fetchCourses = async () => {
+        try {
+            const { data, error } = await supabase.from('courses').select('*, subjects(name)').order('created_at', { ascending: false });
+            if (error) throw error;
+            setCourses(data);
+        } catch (error) {
+            console.error("Error fetching courses:", error);
+        }
+    };
 
     const fetchNotes = async () => {
         try {
@@ -414,6 +449,107 @@ export default function AdminDashboard() {
         addToast("Logged out successfully", 'success');
     };
 
+    // Subject Management
+    const handleCreateSubject = async (e) => {
+        e.preventDefault();
+        if (!newSubject.trim()) return;
+
+        try {
+            const { error } = await supabase.from('subjects').insert([{ name: newSubject.trim() }]);
+            if (error) throw error;
+            addToast("Subject added successfully", 'success');
+            setNewSubject('');
+            fetchSubjects();
+        } catch (error) {
+            addToast("Failed to add subject: " + error.message, 'error');
+        }
+    };
+
+    const handleDeleteSubjectClick = (id) => {
+        setModalConfig({
+            title: 'Delete Subject',
+            message: 'Are you sure? This might affect notes linked to this subject.',
+            isDanger: true,
+            confirmText: 'Delete',
+            onConfirm: () => handleDeleteSubject(id)
+        });
+        setModalOpen(true);
+    };
+
+    const handleDeleteSubject = async (id) => {
+        setModalOpen(false);
+        try {
+            const { error } = await supabase.from('subjects').delete().eq('id', id);
+            if (error) throw error;
+            addToast("Subject deleted", 'success');
+            fetchSubjects();
+        } catch (error) {
+            addToast("Delete Failed: " + error.message, 'error');
+        }
+    };
+
+    // Course Management
+    const handleCreateCourse = async (e) => {
+        e.preventDefault();
+        try {
+            const { error } = await supabase.from('courses').insert([newCourse]);
+            if (error) throw error;
+            addToast("Course added successfully", 'success');
+            setNewCourse({ title: '', description: '', link: '', image_url: '', subject_id: '', is_published: true });
+            fetchCourses();
+        } catch (error) {
+            addToast("Failed to add course: " + error.message, 'error');
+        }
+    };
+
+    const handleUpdateCourse = async (e) => {
+        e.preventDefault();
+        if (!editingCourse) return;
+        try {
+            const { error } = await supabase
+                .from('courses')
+                .update({
+                    title: editingCourse.title,
+                    description: editingCourse.description,
+                    link: editingCourse.link,
+                    image_url: editingCourse.image_url,
+                    subject_id: editingCourse.subject_id,
+                    is_published: editingCourse.is_published
+                })
+                .eq('id', editingCourse.id);
+
+            if (error) throw error;
+            addToast("Course updated successfully", 'success');
+            setEditingCourse(null);
+            fetchCourses();
+        } catch (error) {
+            addToast("Update Failed: " + error.message, 'error');
+        }
+    };
+
+    const handleDeleteCourseClick = (course) => {
+        setModalConfig({
+            title: 'Delete Course',
+            message: `Are you sure you want to delete "${course.title}"?`,
+            isDanger: true,
+            confirmText: 'Delete',
+            onConfirm: () => handleDeleteCourse(course.id)
+        });
+        setModalOpen(true);
+    };
+
+    const handleDeleteCourse = async (id) => {
+        setModalOpen(false);
+        try {
+            const { error } = await supabase.from('courses').delete().eq('id', id);
+            if (error) throw error;
+            addToast("Course deleted", 'success');
+            fetchCourses();
+        } catch (error) {
+            addToast("Delete Failed: " + error.message, 'error');
+        }
+    };
+
     const filteredNotes = notes.filter(note => {
         const matchesStatus = noteFilter === 'all' || note.status === noteFilter;
         const matchesSubject = noteSubjectFilter === 'all' || note.subject === noteSubjectFilter;
@@ -457,6 +593,12 @@ export default function AdminDashboard() {
                             className={`tab-btn ${activeTab === 'communication' ? 'active' : ''}`}
                         >
                             Comm
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('courses')}
+                            className={`tab-btn ${activeTab === 'courses' ? 'active' : ''}`}
+                        >
+                            Courses
                         </button>
                     </div>
                     <button onClick={handleLogoutClick}
@@ -508,6 +650,8 @@ export default function AdminDashboard() {
 
             {activeTab === 'notes' && (
                 <div className="admin-grid grid gap-6 animate-fade-in">
+
+
                     {/* Upload Form */}
                     <div className="glass upload-section rounded-xl h-fit">
                         <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
@@ -521,8 +665,9 @@ export default function AdminDashboard() {
                                     onChange={e => setSubject(e.target.value)}
                                     className="input-field w-full"
                                 >
-                                    <option value="ADS">ADS</option>
-                                    <option value="MAD">MAD</option>
+                                    {subjects.map(sub => (
+                                        <option key={sub.id || sub.name} value={sub.name}>{sub.name}</option>
+                                    ))}
                                     <option value="OTHER">Other</option>
                                 </select>
                             </div>
@@ -533,7 +678,7 @@ export default function AdminDashboard() {
                                     value={title}
                                     onChange={e => setTitle(e.target.value)}
                                     className="input-field w-full"
-                                    placeholder="e.g., Unit 1 Notes"
+                                    placeholder="Add title..."
                                 />
                             </div>
                             <div className="form-group">
@@ -574,7 +719,7 @@ export default function AdminDashboard() {
                                 disabled={uploading}
                                 className="btn-primary w-full flex justify-center items-center gap-2"
                             >
-                                {uploading ? 'Uploading...' : 'Upload Note'}
+                                {uploading ? 'Uploading...' : 'Upload Notes'}
                             </button>
                         </form>
                     </div>
@@ -599,10 +744,9 @@ export default function AdminDashboard() {
                                     onChange={(e) => setNoteSubjectFilter(e.target.value)}
                                     className="input-field text-sm py-1 px-2"
                                 >
-                                    <option value="all">All Subjects</option>
-                                    <option value="ADS">ADS</option>
-                                    <option value="MAD">MAD</option>
-                                    <option value="OTHER">Other</option>
+                                    {subjects.map(sub => (
+                                        <option key={sub.id || sub.name} value={sub.name}>{sub.name}</option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
@@ -660,6 +804,42 @@ export default function AdminDashboard() {
                                 </div>
                             ))}
                             {filteredNotes.length === 0 && <p className="text-center text-gray-500 py-8">No notes found matching filters.</p>}
+                        </div>
+                    </div>
+
+                    {/* Manage Subjects */}
+                    <div className="glass manage-section rounded-xl mb-4">
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                            <Layers size={20} className="text-primary" /> Manage Subjects
+                        </h2>
+                        <form onSubmit={handleCreateSubject} className="flex gap-2 mb-6">
+                            <input
+                                type="text"
+                                placeholder="New subject name..."
+                                value={newSubject}
+                                onChange={e => setNewSubject(e.target.value)}
+                                className="input-field flex-1"
+                            />
+                            <button type="submit" className="p-2 bg-primary rounded-lg text-black hover:bg-yellow-500 transition-colors">
+                                <Plus size={20} />
+                            </button>
+                        </form>
+                        <div className="notes-list max-h-48 overflow-y-auto custom-scrollbar">
+                            {subjects.length === 0 ? (
+                                <p className="text-gray-500 text-center py-4">No subjects found.</p>
+                            ) : (
+                                subjects.map(sub => (
+                                    <div key={sub.id} className="note-item group flex justify-between items-center p-3 bg-white-5 rounded-lg mb-2 border border-white-5">
+                                        <span className="font-medium text-white">{sub.name}</span>
+                                        <button
+                                            onClick={() => handleDeleteSubjectClick(sub.id)}
+                                            className="p-1.5 text-gray-400 hover:bg-red-500-10 hover:text-red-400 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>
@@ -835,6 +1015,160 @@ export default function AdminDashboard() {
                             ))}
                             {announcements.length === 0 && (
                                 <p className="text-center text-gray-500 py-8">No announcements posted yet.</p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'courses' && (
+                <div className="admin-grid grid gap-6 animate-fade-in">
+                    {/* Create/Edit Course Form */}
+                    <div className="glass p-6 rounded-xl h-fit">
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                            {editingCourse ? <Edit2 size={20} className="text-primary" /> : <Plus size={20} className="text-primary" />}
+                            {editingCourse ? 'Edit Course' : 'Add New Course'}
+                        </h2>
+                        <form onSubmit={editingCourse ? handleUpdateCourse : handleCreateCourse} className="space-y-4">
+                            <div>
+                                <label className="block text-sm text-gray-400 mb-1">Course Title</label>
+                                <input
+                                    type="text"
+                                    value={editingCourse ? editingCourse.title : newCourse.title}
+                                    onChange={e => editingCourse ? setEditingCourse({ ...editingCourse, title: e.target.value }) : setNewCourse({ ...newCourse, title: e.target.value })}
+                                    className="input-field w-full"
+                                    placeholder="e.g. Full Stack Web Dev"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm text-gray-400 mb-1">Subject</label>
+                                <select
+                                    value={editingCourse ? editingCourse.subject_id : newCourse.subject_id}
+                                    onChange={e => editingCourse ? setEditingCourse({ ...editingCourse, subject_id: e.target.value }) : setNewCourse({ ...newCourse, subject_id: e.target.value })}
+                                    className="input-field w-full"
+                                    required
+                                >
+                                    <option value="">Select Subject</option>
+                                    {subjects.map(sub => (
+                                        <option key={sub.id} value={sub.id}>{sub.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <label className="text-sm text-gray-400">Published</label>
+                                <button
+                                    type="button"
+                                    onClick={() => editingCourse ? setEditingCourse({ ...editingCourse, is_published: !editingCourse.is_published }) : setNewCourse({ ...newCourse, is_published: !newCourse.is_published })}
+                                    className={`toggle-btn ${editingCourse ? (editingCourse.is_published ? 'active' : 'inactive') : (newCourse.is_published ? 'active' : 'inactive')}`}
+                                >
+                                    <div className="toggle-circle" />
+                                </button>
+                            </div>
+                            <div>
+                                <label className="block text-sm text-gray-400 mb-1">Course Link</label>
+                                <div className="relative">
+                                    <LinkIcon size={16} className="absolute left-3 top-3 text-gray-500" />
+                                    <input
+                                        type="url"
+                                        value={editingCourse ? editingCourse.link : newCourse.link}
+                                        onChange={e => editingCourse ? setEditingCourse({ ...editingCourse, link: e.target.value }) : setNewCourse({ ...newCourse, link: e.target.value })}
+                                        className="input-field w-full pl-9"
+                                        style={{ paddingLeft: '2.5rem' }}
+                                        placeholder="https://..."
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm text-gray-400 mb-1">Image URL</label>
+                                <div className="relative">
+                                    <Image size={16} className="absolute left-3 top-3 text-gray-500" />
+                                    <input
+                                        type="url"
+                                        value={editingCourse ? editingCourse.image_url : newCourse.image_url}
+                                        onChange={e => editingCourse ? setEditingCourse({ ...editingCourse, image_url: e.target.value }) : setNewCourse({ ...newCourse, image_url: e.target.value })}
+                                        style={{ paddingLeft: '2.5rem' }}
+                                        className="input-field w-full pl-9"
+                                        placeholder="https://..."
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm text-gray-400 mb-1">Description</label>
+                                <textarea
+                                    value={editingCourse ? editingCourse.description : newCourse.description}
+                                    onChange={e => editingCourse ? setEditingCourse({ ...editingCourse, description: e.target.value }) : setNewCourse({ ...newCourse, description: e.target.value })}
+                                    className="input-field w-full h-24 resize-none"
+                                    placeholder="Brief course description..."
+                                />
+                            </div>
+
+                            <div className="flex gap-2">
+                                {editingCourse && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setEditingCourse(null)}
+                                        className="btn-secondary w-full"
+                                        style={{ background: 'rgba(255,255,255,0.1)' }}
+                                    >
+                                        Cancel
+                                    </button>
+                                )}
+                                <button type="submit" className="btn-primary w-full mt-4">
+                                    {editingCourse ? 'Update Course' : 'Add Course'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    {/* Course List */}
+                    <div className="course-list glass p-6 w-full rounded-xl">
+                        <h2 className="text-xl font-bold mb-6">Manage Courses</h2>
+                        <div className="space-y-4">
+                            {courses.map(course => (
+                                <div key={course.id} className="course-item bg-white-5 p-4 rounded-xl border border-white-5 flex flex-col md:flex-row gap-4 items-start md:items-center">
+                                    {course.image_url && (
+                                        <img src={course.image_url} alt={course.title} className="w-16 h-16 rounded-lg object-cover" />
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex justify-between items-start gap-4">
+                                            <div className="flex flex-col min-w-0">
+                                                <div className="flex items-center gap-2 max-w-full">
+                                                    <h3 className="course-title font-bold text-lg text-white truncate" title={course.title}>{course.title}</h3>
+                                                    {!course.is_published && (
+                                                        <span className="flex-shrink-0 text-xs px-2 py-0.5 rounded-full bg-yellow-500-10 text-yellow-500 border border-yellow-500-20">Draft</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            {/* <span className="flex-shrink-0 text-xs p-2 rounded-full bg-primary-10 text-primary border border-primary-20 whitespace-nowrap">
+                                                {course.subjects?.name || 'Uncategorized'}
+                                            </span> */}
+                                        </div>
+                                        <p className="text-gray-400 text-sm line-clamp-1 mt-1 break-words">{course.description}</p>
+                                        <a href={course.link} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:underline mt-1 inline-block">
+                                            Visit Link
+                                        </a>
+                                    </div>
+                                    <div className="flex gap-2 self-end md:self-center">
+                                        <button
+                                            onClick={() => setEditingCourse(course)}
+                                            className="p-2 bg-white-5 text-gray-400 hover:text-white rounded-lg hover:bg-white-10 transition-colors"
+                                        >
+                                            <Edit2 size={16} />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteCourseClick(course)}
+                                            className="p-2 bg-white-5 text-gray-400 hover:text-red-400 rounded-lg hover:bg-white-10 transition-colors"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                            {courses.length === 0 && (
+                                <p className="text-center text-gray-500 py-8">No courses available.</p>
                             )}
                         </div>
                     </div>

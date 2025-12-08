@@ -4,14 +4,14 @@ import { Home, AlertCircle } from 'lucide-react';
 
 export default function NotFound() {
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center text-center p-4" style={{position: 'absolute', top: '20px', left: '10px', bottom: '0', right: '10px'}}>
+        <div className="min-h-screen flex flex-col items-center justify-center text-center p-6">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="glass p-12 rounded-xl max-w-lg w-full border border-white/10" style={{padding: '50px 20px'}}
+                className="glass p-6 rounded-xl max-w-lg w-full border border-white-10"
             >
                 <div className="mb-6 flex justify-center">
-                    <div className="bg-red-500/10 p-4 rounded-full">
+                    <div className="bg-red-500-10 p-4 rounded-full">
                         <AlertCircle size={64} className="text-red-400" />
                     </div>
                 </div>

@@ -9,7 +9,7 @@ import {
     Download,
     FileText,
     LayoutDashboard,
-    LogOut,
+    ExternalLink,
     Plus,
     Shield,
     Sparkles,
@@ -25,6 +25,7 @@ export default function DashboardFeed() {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [recentNotes, setRecentNotes] = useState([]);
+    const [recentCourses, setRecentCourses] = useState([]);
     const [reminders, setReminders] = useState([]);
     const [announcements, setAnnouncements] = useState([]);
     const [stats, setStats] = useState({ downloads: 0, joinedDate: null });
@@ -115,7 +116,18 @@ export default function DashboardFeed() {
 
             if (notesData) setRecentNotes(notesData);
 
-            // 3. Fetch Content based on Role
+            // 3. Fetch Recent Courses (Limit 4)
+            const { data: coursesData } = await supabase
+                .from('courses')
+                .select('*, subjects(name)') // Join to get subject name if needed
+                .eq('is_published', true)
+                .order('created_at', { ascending: false })
+                .limit(4);
+
+            if (coursesData) setRecentCourses(coursesData);
+
+
+            // 4. Fetch Content based on Role
             if (profileData.is_admin) {
                 // Fetch Announcements for Admin
                 const { data: announcementsData } = await supabase
@@ -138,7 +150,7 @@ export default function DashboardFeed() {
                 if (remindersData) setReminders(remindersData);
             }
 
-            // 4. Fetch Download Count (from note_history)
+            // 5. Fetch Download Count (from note_history)
             const { count } = await supabase
                 .from('note_history')
                 .select('*', { count: 'exact', head: true })
@@ -300,7 +312,7 @@ export default function DashboardFeed() {
                         <>
                             <QuickActionCard
                                 icon={<Plus size={24} />}
-                                label="Upload Note"
+                                label="Upload Notes"
                                 onClick={() => navigate('/admin-dashboard?tab=notes')}
                                 color="primary"
                             />
@@ -333,7 +345,7 @@ export default function DashboardFeed() {
                             />
                             <QuickActionCard
                                 icon={<Plus size={24} />}
-                                label="Upload Note"
+                                label="Upload Notes"
                                 onClick={() => navigate('/user-dashboard?tab=notes')}
                                 color="primary"
                                 disabled
@@ -508,6 +520,47 @@ export default function DashboardFeed() {
                                 </p>
                             </div>
                         </div>
+                    </div>
+                </motion.div>
+
+                {/* Widget 4: Recent Courses (New) */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="widget-card widget-span-2"
+                >
+                    <div className="widget-header">
+                        <h3 className="widget-title">
+                            <BookOpen size={20} className="text-purple-400" />
+                            Recent Courses
+                        </h3>
+                        <button onClick={() => navigate('/courses')} className="widget-link">View All</button>
+                    </div>
+
+                    <div className="recent-notes-grid">
+                        {recentCourses.map(course => (
+                            <div key={course.id} className="course-item bg-white-5 p-4 rounded-xl border border-white-5 flex flex-col md:flex-row gap-4 items-start md:items-center" onClick={() => window.open(course.link, '_blank')}>
+                                <div className="h-24 rounded-lg overflow-hidden mb-3 relative">
+                                    {course.image_url ? (
+                                        <img src={course.image_url} alt={course.title} className="w-16 h-16 rounded-lg border border-white-5 object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-gray-600">
+                                            <BookOpen size={20} />
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <h4 className="font-bold text-white text-sm mb-1 line-clamp-1 group-hover:text-primary transition-colors">{course.title}</h4>
+                                    <a href={course.link} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:underline mt-1 inline-block">
+                                        <ExternalLink size={16} style={{marginRight: '5px'}}/>Visit Link
+                                    </a>
+                                </div>
+                            </div>
+                        ))}
+                        {recentCourses.length === 0 && (
+                            <p className="text-gray-500 text-sm col-span-full text-center py-4">No courses available yet.</p>
+                        )}
                     </div>
                 </motion.div>
 

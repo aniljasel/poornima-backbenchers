@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { GraduationCap, Menu, X, Home, LayoutDashboard, AlertTriangle, LogIn, User } from 'lucide-react';
+import { GraduationCap, Menu, X, Home, LayoutDashboard, AlertTriangle, LogIn, User, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../supabaseClient';
 
@@ -30,6 +30,7 @@ export default function Navbar() {
 
     const links = [
         { path: '/', name: 'Home', icon: <Home size={20} /> },
+        { path: '/courses', name: 'Courses', icon: <BookOpen size={20} /> },
         { path: '/about', name: 'About', icon: <GraduationCap size={25} /> },
         ...(user ? [{ path: '/important', name: 'Important', icon: <AlertTriangle size={20} /> }] : []),
         {
