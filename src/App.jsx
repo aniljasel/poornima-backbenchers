@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const Auth = lazy(() => import('./pages/Auth'));
 const Courses = lazy(() => import('./pages/Courses'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 
 function App() {
   const navigate = useNavigate();
@@ -67,6 +68,7 @@ function App() {
           <Routes>
             <Route path="/" element={session ? <DashboardFeed /> : <LandingPage />} />
             <Route path="/login" element={<Auth />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/about" element={<About />} />
 
             {/* Protected Routes */}
@@ -108,7 +110,7 @@ function App() {
         </Suspense>
 
         <Footer />
-        
+
       </div>
     </ToastProvider>
   );

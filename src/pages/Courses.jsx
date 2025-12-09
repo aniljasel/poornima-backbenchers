@@ -122,7 +122,6 @@ export default function Courses() {
 
                             <a
                                 href={course.link}
-                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-2 text-primary hover:text-white font-medium text-sm course-link-btn pb-1"
                             >

@@ -540,7 +540,7 @@ export default function DashboardFeed() {
 
                     <div className="recent-notes-grid">
                         {recentCourses.map(course => (
-                            <div key={course.id} className="course-item bg-white-5 p-4 rounded-xl border border-white-5 flex flex-col md:flex-row gap-4 items-start md:items-center" onClick={() => window.open(course.link, '_blank')}>
+                            <div key={course.id} className="course-item bg-white-5 p-4 rounded-xl border border-white-5 flex flex-col md:flex-row gap-4 items-start md:items-center" onClick={() => window.open(course.link)}>
                                 <div className="h-24 rounded-lg overflow-hidden mb-3 relative">
                                     {course.image_url ? (
                                         <img src={course.image_url} alt={course.title} className="w-16 h-16 rounded-lg border border-white-5 object-cover" />
@@ -552,7 +552,7 @@ export default function DashboardFeed() {
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <h4 className="font-bold text-white text-sm mb-1 line-clamp-1 group-hover:text-primary transition-colors">{course.title}</h4>
-                                    <a href={course.link} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:underline mt-1 inline-block">
+                                    <a href={course.link} rel="noopener noreferrer" className="text-xs text-blue-400 hover:underline mt-1 inline-block">
                                         <ExternalLink size={16} style={{marginRight: '5px'}}/>Visit Link
                                     </a>
                                 </div>

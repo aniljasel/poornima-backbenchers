@@ -1147,7 +1147,7 @@ export default function AdminDashboard() {
                                             </span> */}
                                         </div>
                                         <p className="text-gray-400 text-sm line-clamp-1 mt-1 break-words">{course.description}</p>
-                                        <a href={course.link} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:underline mt-1 inline-block">
+                                        <a href={course.link} rel="noopener noreferrer" className="text-xs text-blue-400 hover:underline mt-1 inline-block">
                                             Visit Link
                                         </a>
                                     </div>

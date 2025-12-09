@@ -54,16 +54,16 @@ export default function Footer() {
                         <h3 className="footer-heading">Resources</h3>
                         <ul className="footer-list">
                             <li>
-                                <Link to="/important" className="text-gray-400 text-sm footer-link">Important Notices</Link>
+                                <Link to="/user-dashboard" className="text-gray-400 text-sm footer-link">Important Notices</Link>
                             </li>
                             <li>
-                                <a href="#" className="text-gray-400 text-sm footer-link">Past Year Papers</a>
+                                <Link to="/old-papers" className="text-gray-400 text-sm footer-link">Past Year Papers</Link>
                             </li>
                             <li>
-                                <a href="#" className="text-gray-400 text-sm footer-link">Study Material</a>
+                                <Link to="/courses" className="text-gray-400 text-sm footer-link">Study Material</Link>
                             </li>
                             <li>
-                                <a href="#" className="text-gray-400 text-sm footer-link">Student Guide</a>
+                                <Link to="/" className="text-gray-400 text-sm footer-link">Student Guide</Link>
                             </li>
                         </ul>
                     </div>
@@ -88,8 +88,8 @@ export default function Footer() {
                         © {new Date().getFullYear()} Poornima Backbenchers. All rights reserved.
                     </p>
                     <div className="flex gap-6 text-sm">
-                        <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors">Privacy Policy</a>
-                        <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors">Terms of Service</a>
+                        <Link to="/privacy-policy" className="text-gray-500 hover:text-gray-300 transition-colors">Privacy Policy</Link>
+                        <Link to="/terms-of-service" className="text-gray-500 hover:text-gray-300 transition-colors">Terms of Service</Link>
                     </div>
                 </div>
             </div>
