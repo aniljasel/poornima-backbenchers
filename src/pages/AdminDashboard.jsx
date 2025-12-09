@@ -772,7 +772,7 @@ export default function AdminDashboard() {
                                         </span>
                                     </div>
 
-                                    <div className="flex justify-end gap-2 pt-2 border-t border-white-5">
+                                    <div className="flex justify-end gap-2 pt-2 border-t">
                                         <div className="flex mt-4 gap-2">
                                             {note.status !== 'approved' && (
                                                 <button
